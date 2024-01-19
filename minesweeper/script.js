@@ -5,11 +5,37 @@ const endGameText = document.querySelector('.end-game-text');
 const playAgainButton = document.querySelector('.play-again');
 
 const totalCells = 100;
-const totalBombs = 50;
-const maxScore = 5;
+const totalBombs = 6;
+const maxScore = totalCells - totalBombs;
 const bombsList = [];
 
 let score = 0;
+
+while (bombsList.length < totalBombs) {
+    const randomNumber = Math.floor(Math.random() * totalCells) + 1;
+
+    if (!bombsList.includes(randomNumber)) bombsList.push(randomNumber);
+}
+
+for (let i = 1; i <= totalCells; i++) {
+    const cell = document.createElement('div');
+    cell.classList.add('cell');
+
+    cell.addEventListener('click', function () {
+
+        if (cell.classList.contains('cell-clicked')) return;
+
+        if (bombsList.includes(i)) {
+            cell.classList.add('cell-bomb');
+            endGame(false);
+        } else {
+            cell.classList.add('cell-clicked');
+            updateScore();
+        }
+    });
+
+    grid.appendChild(cell);
+}
 
 function updateScore() {
     score++;
@@ -19,35 +45,23 @@ function updateScore() {
     }
 }
 
-for (let i = 1; i <= 100; i++) {
-    const cell = document.createElement('div');
-    cell.classList.add('cell');
+function revealAllBombs() {
+    const cells = document.querySelectorAll('.cell');
 
-    cell.addEventListener('click', function () {
+    for (let i = 1; i <= cells.length; i++) {
+        const cell = cells[i - 1];
+
         if (bombsList.includes(i)) {
             cell.classList.add('cell-bomb');
-            endGame(false);
         }
-        cell.classList.add('cell-clicked');
-        updateScore();
-    });
-
-    grid.appendChild(cell);
-}
-
-while (bombsList.length < totalBombs) {
-    const randomNumber = Math.floor(Math.random() * totalCells) + 1;
-
-    if (!bombsList.includes(randomNumber)) {
-        bombsList.push(randomNumber)
     }
 }
-
 function endGame(isVictory) {
     if (isVictory) {
         endGameText.innerHTML = 'YOU<br>WON';
         endGameScreen.classList.add('win');
     }
+    revealAllBombs();
     endGameScreen.classList.remove('hidden');
 }
 
